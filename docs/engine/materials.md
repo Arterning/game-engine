@@ -283,4 +283,4 @@ engine.start()
 
 ## 下一篇读什么
 
-接下来可以读 `lighting.js`。先回到第二节的五个球，把同一组材质放进不同的灯光配置，就能看到光源位置、亮度和阴影怎样与材质配合。 [lighting.js 源码](../../engine/lighting.js)
+接下来可以读 `lighting.js`。先回到第二节的五个球，把同一组材质放进不同的灯光配置，就能看到光源位置、亮度和阴影怎样与材质配合。 [lighting.js 讲义](lighting.md)

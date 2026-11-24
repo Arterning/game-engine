@@ -1,0 +1,71 @@
+main.playground {
+  max-width: 1500px;
+  padding: clamp(16px, 3vw, 36px);
+}
+
+.playground-header, .playground-actions, .playground-console-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.playground-header { margin-bottom: 18px; }
+.playground-header a { color: #8cdbf5; font-size: 0.875rem; }
+.playground-header h1 { margin: 0; font-size: 2rem; }
+.playground-actions label { display: inline-flex; align-items: center; gap: 8px; }
+.playground-actions select, .playground-actions button {
+  font: inherit;
+  color: inherit;
+  background: #263b48;
+  border: 1px solid #496473;
+  border-radius: 5px;
+  padding: 5px 12px;
+}
+.playground-actions button { background: #8cdbf5; color: #10202a; font-weight: 650; cursor: pointer; }
+
+.playground-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-height: max(540px, calc(100dvh - 155px));
+}
+
+.playground-editor, .playground-output {
+  display: grid;
+  min-width: 0;
+  background: #192a35;
+  border: 1px solid #3b4d58;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.playground-editor { grid-template-rows: auto 1fr; }
+.playground-output { grid-template-rows: auto minmax(250px, 1fr) auto 170px; }
+.playground-editor label, .playground-output h2 { margin: 0; padding: 8px 14px; font-size: 0.95rem; font-weight: 650; }
+.playground-console-title span { padding-right: 14px; color: #b7cbd5; font-size: 0.8rem; }
+
+.playground #code, .playground #console {
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 0;
+  background: #0e181f;
+  color: #edf3f6;
+  font: 0.875rem/1.65 ui-monospace, monospace;
+  tab-size: 2;
+}
+
+.playground #code { resize: none; }
+.playground #code:focus-visible { outline-offset: -2px; }
+.playground #preview { position: relative; background: #111c24; }
+.playground iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.playground #console { overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.playground #console .warn { color: #ffcf77; }
+.playground #console :is(.error, .failed) { color: #ffacaa; }
+
+@media (max-width: 760px) {
+  .playground-layout { grid-template-columns: minmax(0, 1fr); }
+  .playground-editor { min-height: 370px; }
+}

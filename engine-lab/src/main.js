@@ -7,9 +7,17 @@ const lessons = {
   "04": () => import("./lessons/04-game-state.js"),
   "05": () => import("./lessons/05-feedback.js"),
 }
-const lesson = new URLSearchParams(location.search).get("lesson")
+const params = new URLSearchParams(location.search)
+const lesson = params.get("lesson")
 
-if (lesson !== null) {
+if (params.has("playground")) {
+  import("./playground/index.js").then(({ openPlayground }) => openPlayground()).catch((error) => {
+    const status = document.querySelector("#status")
+    status.textContent = "代码实验台加载失败，请查看浏览器控制台。"
+    status.hidden = false
+    console.error(error)
+  })
+} else if (lesson !== null) {
   const status = document.querySelector("#status")
   const showStatus = (message) => {
     status.textContent = message

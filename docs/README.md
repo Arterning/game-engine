@@ -8,6 +8,7 @@
 
 - [`engine/engine.js` 源码解析](engine/engine.md) · 从场景、相机和帧循环开始
 - [`engine/models.js` 源码解析](engine/models.md) · 从基本形状到组合模型、实例化与对象池
+- [`engine/materials.js` 源码解析](engine/materials.md) · 从颜色、光照到程序化纹理
 - [`engine/animation.js` 源码解析](engine/animation.md) · 在理解帧循环后，学习如何驱动补间和动画
 
 ## 学习目录

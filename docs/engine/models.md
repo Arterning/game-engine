@@ -267,4 +267,4 @@ engine.start()
 
 ## 下一篇读什么
 
-接下来读 `materials.js`。这里的 `models.box()`、`ground()` 和 `label()` 已经分别用到了 `matte()`、`checkerTexture()` 和 `textTexture()`，可以从这三个实际调用点进入，理解同一个形状如何呈现不同表面。 [materials.js](../../engine/materials.js)
+接下来读 `materials.js`。这里的 `models.box()`、`ground()` 和 `label()` 已经分别用到了 `matte()`、`checkerTexture()` 和 `textTexture()`，可以从这三个实际调用点进入，理解同一个形状如何呈现不同表面。 [materials.js 讲义](materials.md)

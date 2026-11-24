@@ -147,9 +147,18 @@
 
 `ease` 从 `math.js` 导入，并在文件末尾原样再导出。这个文件实际用到 `outCubic`（补间默认）、`linear`（等待）、`outElastic`（压扁回弹）。曲线的输入都是时间进度，输出是插值比例。例如 `linear(0.5)` 是 0.5，而 `outCubic(0.5)` 是 0.875。公共入口也导出了同一个 `ease` 对象。 [animation.js](../../engine/animation.js#L347) · [数学模块中的实现](../../engine/math.js#L160) · [公共入口](../../engine/index.js#L37)
 
-## 动手跟一次补间
+## 在实验台看动画
 
-在运行中的 Vite 地址后加上 `?playground`，或从练习目录打开「代码实验台」。选择内置的「补间数值」示例，修改左边的代码后，可以在右侧控制台看数值变化。想在浏览器里看到实际的 3D 动画，可以切换到「补间立方体」。也可以在仓库根目录用 Node 运行下面的代码，把导入改用 `"./engine/animation.js"`。
+从 `engine-lab` 的练习目录打开「代码实验台」，或在 Vite 地址后加上 `?playground`。每次用下面**一整段代码替换左侧编辑器的内容**，等它自动运行，或点击「运行」。右侧「预览」显示通过 `createEngine()` 创建的画布，「控制台」显示 `console.log()` 的输出。
+
+- [① 对比两条补间曲线](#示例-1-对比两条补间曲线)
+- [② 用弹簧追上移动目标](#示例-2-用弹簧追上移动目标)
+- [③ 给命中加上闪光、回弹和震动](#示例-3-给命中加上闪光回弹和震动)
+- [④ 切换两段关键帧动画](#示例-4-切换两段关键帧动画)
+
+### 先理解原来的数值例子
+
+实验台内置的「补间数值」只在控制台输出。下面的 `point` 是普通 JavaScript 对象，三次 `step()` 都在同一次执行中完成。示例 1 把同样的补间应用到 3D 方块的高度，由引擎一帧一帧推进。
 
 ```js
 import { createTweens, ease } from "@game-engine/runtime"
@@ -171,4 +180,159 @@ tweens.step(0.375) // 累计 0.75 秒，y 精确等于 10
 done.then((target) => console.log(target === point)) // true
 ```
 
-接下来可以用已有的立方体验证弹簧。给 `new Spring({ value: 0.5 })` 的 `target` 设为 2，在每帧把 `spring.update(dt)` 的返回值写到方块的 `position.y`。试着改变 `damping`，观察它如何影响到达目标附近后的摆动。把补间与弹簧分别试一次，再回头看两份更新逻辑各自记住了哪些状态。
+### 示例 1 对比两条补间曲线
+
+**会看到什么**。蓝色和橙色方块同时起跳、同时抵达最高点。蓝色匀速上升，橙色迅速上升、接近最高点时放慢。两块随后按相同的曲线落回地面，反复播放。
+
+```js
+import { createEngine, createTweens, ease, lights, models } from "@game-engine/runtime"
+
+const engine = createEngine({
+  background: "#243743",
+  cameraPosition: [0, 3, 8],
+  lookAt: [0, 1.4, 0],
+})
+lights.daylight(engine.scene)
+const blue = models.box(1, { color: "#66d9ff", position: [-1.2, 0.5, 0] })
+const orange = models.box(1, { color: "#ff993c", position: [1.2, 0.5, 0] })
+engine.add(models.ground(20), blue, orange)
+const tweens = createTweens(engine)
+engine.start()
+
+async function jump() {
+  while (true) {
+    await Promise.all([
+      tweens.to(blue.position, { y: 2.6 }, { duration: 1.2, ease: ease.linear }),
+      tweens.to(orange.position, { y: 2.6 }, { duration: 1.2, ease: ease.outCubic }),
+    ])
+    await tweens.wait(0.3)
+    await Promise.all([
+      tweens.to(blue.position, { y: 0.5 }, { duration: 0.8, ease: ease.outBounce }),
+      tweens.to(orange.position, { y: 0.5 }, { duration: 0.8, ease: ease.outBounce }),
+    ])
+    await tweens.wait(0.5)
+  }
+}
+jump()
+```
+
+`createTweens(engine)` 注册了一个帧回调。两次 `to()` 把任务加入同一个管理器，各自的 `target` 是方块的 `position`。经过 0.6 秒时，蓝色走过高度差的 50%，橙色走过 87.5%。`Promise.all` 等两块都完成才开始停顿和下落。把橙色的 `ease.outCubic` 改成 `ease.outBack`，观察它怎么越过最高点，再回到目标高度。
+
+### 示例 2 用弹簧追上移动目标
+
+**会看到什么**。橙色小球隔一会儿换个位置，蓝色方块会顺着新方向追过去。它可能冲过小球的中心，再回到目标附近。
+
+```js
+import { createEngine, SpringVec3, lights, models } from "@game-engine/runtime"
+
+const engine = createEngine({
+  background: "#243743",
+  cameraPosition: [5, 5, 10],
+  lookAt: [0, 1, 0],
+})
+lights.daylight(engine.scene)
+const cube = models.box(0.9, { color: "#66d9ff", position: [0, 0.6, 0] })
+const target = models.sphere(0.18, {
+  color: "#ff993c",
+  position: [2, 1.15, 0],
+})
+engine.add(models.ground(20), cube, target)
+
+const spring = new SpringVec3({ stiffness: 90, damping: 8 })
+spring.x.value = cube.position.x
+spring.y.value = cube.position.y + 0.55
+spring.z.value = cube.position.z
+
+engine.onUpdate((dt, elapsed) => {
+  const right = Math.floor(elapsed / 1.5) % 2 === 0
+  target.position.set(right ? 2 : -2, 1.15, right ? -1 : 1)
+  spring.setTarget(target.position)
+  spring.update(dt, cube.position)
+  cube.position.y -= 0.55
+})
+
+engine.start()
+```
+
+小球的位置是目标，弹簧自己保存蓝色方块的运动状态。这里把方块画在弹簧结果下方 0.55 个单位，让方块到达目标时小球还露在上方。`spring.update(dt, cube.position)` 每帧重新写入完整向量，所以这个显示偏移不会累积。把 `damping` 从 8 改到 20，观察冲过目标的幅度怎样变化。再把球的位置改成 `target.position.set(Math.sin(elapsed * 2) * 2, 1.15, 0)`，观察方块如何追一个持续移动的目标。
+
+### 示例 3 给命中加上闪光、回弹和震动
+
+**会看到什么**。蓝色方块一直悬浮和自转。点击预览里的「命中一下」，方块短暂变亮、压扁后回弹，同时整个画面抖动。
+
+```js
+import {
+  createEngine, createHud, createShake, createTweens, flash, hover, lights, models, pop,
+} from "@game-engine/runtime"
+
+const engine = createEngine({
+  background: "#243743",
+  cameraPosition: [3, 2.6, 6],
+  lookAt: [0, 0.9, 0],
+})
+lights.daylight(engine.scene)
+const cube = models.box(1.2, { color: "#66d9ff", position: [0, 1, 0] })
+engine.add(models.ground(20), cube)
+const tweens = createTweens(engine)
+const hud = createHud({ container: engine.container })
+
+engine.onUpdate(hover(cube, { amplitude: 0.18, speed: 3, spin: 1 }))
+const cameraBase = engine.camera.position.clone()
+const shake = createShake(engine.camera, { decay: 7 })
+engine.onLateUpdate((dt) => {
+  engine.camera.position.copy(cameraBase)
+  shake.update(dt)
+})
+
+const { element: button } = hud.button("命中一下", async () => {
+  button.disabled = true
+  flash(cube, { color: "#ffffff", intensity: 1.5, duration: 0.15 })
+  shake.add(0.28)
+  await pop(cube, tweens, { scale: 1.35, duration: 0.5 })
+  button.disabled = false
+})
+
+engine.start()
+```
+
+这里几个效果同时发生，但改的是不同数据。 `hover` 每帧写高度和旋转，`pop` 补间缩放，`flash` 暂时提高材质的自发光，`shake` 最后叠加相机的位移。相机每帧先恢复基准位置，因此震动偏移不会累加。试着把 `decay` 改成 3，观察震动持续多久。再把 `pop` 的 `scale` 改成 1.6，观察启动时的姿势。
+
+### 示例 4 切换两段关键帧动画
+
+**会看到什么**。橙色长方块先左右摇摆。点「跳跃」后，它逐渐从摇摆过渡到跳跃。点「摇摆」可以切回去。两个片段都在代码里定义，粘贴即可运行。
+
+```js
+import { AnimationClip, NumberKeyframeTrack } from "three"
+import { createEngine, createHud, createMixer, lights, models } from "@game-engine/runtime"
+
+const engine = createEngine({
+  background: "#243743",
+  cameraPosition: [0, 2.6, 8],
+  lookAt: [0, 1.6, 0],
+})
+lights.daylight(engine.scene)
+const block = models.box([0.85, 1.6, 0.85], {
+  color: "#ff993c",
+  position: [0, 0.8, 0],
+})
+engine.add(models.ground(20), block)
+
+const times = [0, 0.5, 1, 1.5]
+const sway = new AnimationClip("sway", 1.5, [
+  new NumberKeyframeTrack(".rotation[z]", times, [0, -0.5, 0.5, 0]),
+  new NumberKeyframeTrack(".position[y]", times, [0.8, 0.8, 0.8, 0.8]),
+])
+const jump = new AnimationClip("jump", 1.5, [
+  new NumberKeyframeTrack(".rotation[z]", times, [0, 0, 0, 0]),
+  new NumberKeyframeTrack(".position[y]", times, [0.8, 2.6, 0.8, 0.8]),
+])
+
+const player = createMixer(block, [sway, jump], engine)
+const hud = createHud({ container: engine.container })
+hud.button("摇摆", () => player.play("sway", { fade: 0.5 }), { at: "bottom-left" })
+hud.button("跳跃", () => player.play("jump", { fade: 0.5 }))
+player.play("sway")
+engine.start()
+```
+
+轨道里的 `.rotation[z]` 指定绕 Z 轴转动，`.position[y]` 指定模型高度。`times` 是四个关键帧的时间，后面的数组记录这些时间点上的属性值。比如跳跃在第 0.5 秒达到 `y = 2.6`，两帧之间由 Three.js 插值。两个片段都提供高度和角度轨道，因此混合期间能同时看到摇摆减弱和跳跃出现。把两个按钮的 `fade` 从 0.5 改到 1，感受过渡变长。想观察一次性动作，把「跳跃」按钮改为 `player.play("jump", { fade: 0.5, loop: false })`，它会在最后一个关键帧停住。切回「摇摆」后，就能再次触发跳跃。

@@ -2,7 +2,7 @@
 
 上一篇的旋转方块是用 `new Mesh(new BoxGeometry(...), material)` 手工造的。现在从 `models.box()` 进去，看看项目如何把这几步变成可复用的工厂，再用方块、圆柱和圆锥拼出角色、车和树。读完后，你应该能决定什么时候用一个网格、什么时候把零件放进组，以及什么时候需要实例化或对象池。 [engine.js 讲义](engine.md) · [models.js 源码](../../engine/models.js)
 
-在 `engine-lab` 打开「代码实验台」。每次把一整段代码替换进左侧编辑器，右侧就会显示场景。
+在 `lab` 打开「代码实验台」。每次把一整段代码替换进左侧编辑器，右侧就会显示场景。
 
 ## 1. `build()` 与 `castShadows()`
 
@@ -263,7 +263,7 @@ engine.start()
 - **`loadModel`** 使用模块级 `GLTFLoader`，把回调式的 `load` 包装成 Promise。成功后先给 `gltf.scene` 内的网格开阴影，再返回 `{ scene, animations, gltf }`。加载完成后可把 `scene` 加进引擎，将 `animations` 和同一个场景对象交给 `createMixer`。失败时 Promise 拒绝。常见资源是单文件 `.glb`，或带其他资源引用的 `.gltf`。 [loadModel 源码](../../engine/models.js#L632) · [动画混合器讲义](animation.md)
 - **`loadTexture`** 用 `TextureLoader` 读取图片。成功后，通常用 sRGB 解释颜色贴图。传 `data: true` 时使用 `NoColorSpace`，例如粗糙度等数据贴图需要保留数值含义。传 `repeat: [x, y]` 会同时设置两个方向的重复环绕模式和次数。Promise 返回纹理，可以赋给网格材质的对应贴图属性，失败同样会拒绝。 [loadTexture 源码](../../engine/models.js#L646)
 
-本篇的实验台示例都在代码里直接建模。要加载外部 GLTF 或远程图片，可把加载代码放进普通 Vite 示例模块中运行，在那里从项目提供的 URL 读取资源。实验台的预览沙箱限制网络加载。 [实验台说明](../../engine-lab/README.md)
+本篇的实验台示例都在代码里直接建模。要加载外部 GLTF 或远程图片，可把加载代码放进普通 Vite 示例模块中运行，在那里从项目提供的 URL 读取资源。实验台的预览沙箱限制网络加载。 [实验台说明](../../lab/README.md)
 
 ## 下一篇读什么
 

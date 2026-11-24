@@ -16,10 +16,10 @@ npm run dev
 | 目录 | 内容 |
 | --- | --- |
 | [engine/](engine/) | 引擎源码与 npm 包，公开入口是 `engine/index.js` |
-| [engine-lab/src/lessons/](engine-lab/src/lessons/) | 五个从包名导入引擎的 Vite 示例 |
+| [lab/src/lessons/](lab/src/lessons/) | 五个从包名导入引擎的 Vite 示例 |
 | [docs/](docs/) | 面向有 JS/TS 基础的初学者的分章教程 |
 
-`npm run lint` 检查示例源码，`npm run build` 生成 `engine-lab/dist/`，`npm run preview` 可预览生产构建。
+`npm run lint` 检查示例源码，`npm run build` 生成 `lab/dist/`，`npm run preview` 可预览生产构建。
 
 ## 在自己的项目中使用
 
@@ -103,6 +103,6 @@ game.onUpdate((dt) => {
 ## 接入时的几个约定
 
 - **帧循环**：用 `engine.onUpdate(fn)` 注册游戏逻辑。该方法返回注销函数，跟随镜头等读取更新结果的逻辑可以放在 `onLateUpdate`。
-- **物理**：`createPhysics()` 创建独立的模拟。通过 `addGround()`、`addBox()`、`addBody()` 注册对象，再在每帧调用 `physics.step(dt)`。当前主要支持动态球体与静态地面、盒体或球体的碰撞，以及触发器重叠。完整示例见 [第三章](engine-lab/src/lessons/03-physics.js)。
-- **实时状态**：`createTimer()` 需要主动调用 `update(dt)`。计时器、状态机、分数和 HUD 的组合示例见 [第四章](engine-lab/src/lessons/04-game-state.js)。
+- **物理**：`createPhysics()` 创建独立的模拟。通过 `addGround()`、`addBox()`、`addBody()` 注册对象，再在每帧调用 `physics.step(dt)`。当前主要支持动态球体与静态地面、盒体或球体的碰撞，以及触发器重叠。完整示例见 [第三章](lab/src/lessons/03-physics.js)。
+- **实时状态**：`createTimer()` 需要主动调用 `update(dt)`。计时器、状态机、分数和 HUD 的组合示例见 [第四章](lab/src/lessons/04-game-state.js)。
 - **退出与清理**：在单页应用卸载游戏时，调用已创建模块的清理方法，例如 `input.dispose()`、`audio.dispose()`、`hud.remove()`，再调用 `engine.dispose()`。音频通常需要先有一次用户交互。

@@ -43,4 +43,4 @@
 
 ## 在 Vite 中运行练习
 
-前五章的完整实现放在 [engine-lab/src/lessons/](../engine-lab/src/lessons/)。在仓库根目录执行 `npm install` 和 `npm run dev`，再从终端显示的地址进入练习目录。Vite 示例从 `@game-engine/runtime` 导入引擎，由 npm workspace 链接到本仓库的 `engine/` 包。第一章的静态服务器步骤仍可以用来理解浏览器模块的加载过程。
+前五章的完整实现放在 [lab/src/lessons/](../lab/src/lessons/)。在仓库根目录执行 `npm install` 和 `npm run dev`，再从终端显示的地址进入练习目录。Vite 示例从 `@game-engine/runtime` 导入引擎，由 npm workspace 链接到本仓库的 `engine/` 包。第一章的静态服务器步骤仍可以用来理解浏览器模块的加载过程。

@@ -2,7 +2,7 @@
 
 上一篇换了材质来观察反光。这一篇固定物体和材质，只换灯。读完你应该能分辨平行光、半球光、聚光灯和点光源，知道怎么调阴影的覆盖范围，也能让一盏灯随角色移动。模块里的方法通过公共入口的 `lights` 使用，例如 `lights.daylight(engine.scene)`。 [lighting.js 源码](../../engine/lighting.js) · [materials.js 讲义](materials.md) · [公共入口](../../engine/index.js#L25)
 
-打开 `engine-lab` 的「代码实验台」，每次把一整段示例替换进左侧。右侧预览里的按钮可以直接点。
+打开 `lab` 的「代码实验台」，每次把一整段示例替换进左侧。右侧预览里的按钮可以直接点。
 
 ## 1. `daylight()`、`sunset()` 与 `night()` · 换一套室外布光
 

@@ -3,12 +3,12 @@
   "private": true,
   "workspaces": [
     "engine",
-    "engine-lab"
+    "lab"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace engine-lab --",
-    "build": "npm run build --workspace engine-lab",
-    "lint": "npm run lint --workspace engine-lab",
-    "preview": "npm run preview --workspace engine-lab --"
+    "dev": "npm run dev --workspace lab --",
+    "build": "npm run build --workspace lab",
+    "lint": "npm run lint --workspace lab",
+    "preview": "npm run preview --workspace lab --"
   }
 }

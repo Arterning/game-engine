@@ -6,7 +6,8 @@
 
 ## 按文件读源码
 
-- [`engine/animation.js` 源码解析](engine/animation.md)
+- [`engine/engine.js` 源码解析](engine/engine.md) · 从场景、相机和帧循环开始
+- [`engine/animation.js` 源码解析](engine/animation.md) · 在理解帧循环后，学习如何驱动补间和动画
 
 ## 学习目录
 

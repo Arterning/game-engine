@@ -4,7 +4,7 @@
 
 ## 搭好练习入口
 
-在仓库根目录创建 `engine-lab/`，把以下内容保存为 `engine-lab/index.html`。导入映射与项目入口使用同一个 Three.js 版本。
+在仓库根目录创建 `engine-lab-practice/`，把以下内容保存为 `engine-lab-practice/index.html`。导入映射与项目入口使用同一个 Three.js 版本。
 
 ```html
 <!doctype html>
@@ -32,7 +32,7 @@
 </html>
 ```
 
-把这段保存为 `engine-lab/example.js`。
+把这段保存为 `engine-lab-practice/example.js`。
 
 ```js
 import { createEngine, lights, models } from "../engine/index.js"
@@ -55,13 +55,13 @@ engine.onUpdate((dt) => {
 engine.start()
 ```
 
-从**仓库根目录**启动静态服务器，再打开练习地址。HTTP 负责本地模块的加载，浏览器还需要能访问导入映射中的 CDN。
+手写版本需要从仓库根目录启动静态服务器。HTTP 负责本地模块的加载，浏览器还需要能访问导入映射中的 CDN。
 
 ```bash
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
-打开 [练习页面](http://127.0.0.1:8000/engine-lab/)。正常时会看到地面、一个持续旋转的蓝色方块及光照。
+打开[手写练习](http://127.0.0.1:8000/engine-lab-practice/)。如果已经运行了 `npm run dev`，也可以打开 [Vite 版第一章](http://127.0.0.1:5173/?lesson=01)。正常时会看到地面、一个持续旋转的蓝色方块及光照。
 
 ## 从场景到画布
 

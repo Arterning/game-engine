@@ -1,6 +1,6 @@
 # 02 · 从按键到移动和镜头
 
-本章接着使用第一章的 `engine-lab/example.js`。把第一行导入改为：
+本章接着使用第一章的 `engine-lab-practice/example.js`。把第一行导入改为：
 
 ```js
 import { createEngine, createInput, followCamera, lights, models } from "../engine/index.js"

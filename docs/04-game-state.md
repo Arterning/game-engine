@@ -1,6 +1,6 @@
 # 04 · 把原型变成游戏
 
-这一章把前面的原型扩展成 20 秒拾取挑战。用以下完整代码替换 `engine-lab/example.js`，HTML 继续使用第一章的版本。
+这一章把前面的原型扩展成 20 秒拾取挑战。用以下完整代码替换 `engine-lab-practice/example.js`，HTML 继续使用第一章的版本。
 
 ```js
 import {
@@ -13,7 +13,9 @@ const input = createInput({ engine })
 const hud = createHud({ container: engine.container })
 const physics = createPhysics({ gravity: -18 })
 const score = createScore({ hud, label: "金币", key: "engine-lab" })
-const hint = hud.text("WASD 移动 · 空格跳跃 · R 重开")
+const controlsHint = "WASD 移动 · 空格跳跃 · R 重开"
+const startHint = "按 WASD 或方向键开始计时 · 空格跳跃"
+const hint = hud.text(startHint)
 
 lights.daylight(engine.scene)
 const player = models.sphere(0.5, { color: "#66d9ff", position: [0, 2, 0] })
@@ -38,12 +40,15 @@ const timer = createTimer({
   onEnd: () => machine.go("result"),
 })
 
+let started = false
+
 const machine = createStateMachine({
   play: {
     enter() {
       score.reset()
       timer.reset()
-      timer.start()
+      timer.pause()
+      started = false
       body.position.set(0, 2, 0)
       body.velocity.set(0, 0, 0)
       body.grounded = false
@@ -52,7 +57,7 @@ const machine = createStateMachine({
         mesh.visible = true
         trigger.enabled = true
       }
-      hint.set("WASD 移动 · 空格跳跃 · R 重开")
+      hint.set(startHint)
     },
     update(dt) {
       if (input.pressed("restart")) {
@@ -60,9 +65,15 @@ const machine = createStateMachine({
         machine.go("play")
         return
       }
+      const jump = input.pressed("jump")
+      if (!started && (input.move.lengthSq() > 0 || jump)) {
+        started = true
+        timer.start()
+        hint.set(controlsHint)
+      }
       body.velocity.x = input.move.x * 4
       body.velocity.z = input.move.y * 4
-      if (input.pressed("jump") && body.grounded) body.velocity.y = 7
+      if (jump && body.grounded) body.velocity.y = 7
       timer.update(dt)
       if (machine.is("play")) physics.step(dt)
     },
@@ -102,7 +113,7 @@ engine.start()
 3. `score.add(1)` 修改数值并更新 HUD。若刷新后看到历史最佳分，这是 `createScore()` 经由 `createStorage()` 写入了浏览器存储。
 4. 集齐或时间耗尽后，状态机切到 `result`。此时继续渲染场景，输入只用来重开。
 
-`createStateMachine()` 用 `go()` 依次执行旧状态的 `exit`、新状态的 `enter`，并发出 `change`。切到当前状态时会直接返回，因此练习里的 R 先切到结算，再进游戏。倒计时器需要由游戏显式执行 `update(dt)`。倒计时归零会暂停，重开时用 `reset()` 后再调用 `start()`。 [state.js](../engine/state.js)
+`createStateMachine()` 用 `go()` 依次执行旧状态的 `exit`、新状态的 `enter`，并发出 `change`。切到当前状态时会直接返回，因此练习里的 R 先切到结算，再进游戏。倒计时器需要由游戏显式执行 `update(dt)`。倒计时归零会暂停。开局和重开后，计时器保持在 20 秒，等玩家第一次移动或按空格才调用 `start()`。 [state.js](../engine/state.js)
 
 HUD 使用 DOM，场景模型走 WebGL。隐藏金币的 `mesh.visible` 只影响画面，禁用触发器的 `trigger.enabled` 才会停止碰撞检查。 [hud.js](../engine/hud.js) · [physics.js](../engine/physics.js)
 

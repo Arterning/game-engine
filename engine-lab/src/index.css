@@ -1,0 +1,15 @@
+:root { color-scheme: dark; }
+html, body { min-height: 100%; margin: 0; }
+body { position: relative; background: #111c24; color: #edf3f6; font: 16px/1.65 system-ui, sans-serif; }
+body.playing { height: 100dvh; overflow: hidden; background: #243743; }
+main { max-width: 640px; margin: auto; padding: clamp(24px, 7vw, 72px); }
+h1 { margin: 0 0 16px; font-size: clamp(28px, 7vw, 42px); }
+ol { padding: 0; list-style: none; }
+li { border-bottom: 1px solid #3b4d58; }
+a { color: inherit; text-underline-offset: 0.2em; }
+li a { display: block; padding: 12px 0; font-weight: 650; }
+li a:hover { color: #8cdbf5; }
+nav { position: absolute; right: 14px; bottom: 14px; z-index: 5; }
+nav a { display: block; padding: 8px 12px; border-radius: 6px; background: #111c24; }
+#status { position: absolute; top: 10px; left: 20px; z-index: 5; pointer-events: none; }
+main:not([hidden]) ~ #status { position: static; max-width: 640px; margin: 0 auto; padding: 0 24px; }

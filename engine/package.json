@@ -1,0 +1,11 @@
+{
+  "name": "@game-engine/runtime",
+  "version": "0.1.0",
+  "description": "Small Three.js toolkit for browser games",
+  "type": "module",
+  "exports": "./index.js",
+  "files": ["*.js"],
+  "peerDependencies": {
+    "three": "^0.185.1"
+  }
+}
